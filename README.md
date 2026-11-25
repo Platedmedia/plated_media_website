@@ -40,7 +40,7 @@ Search `index.html` for these:
 
 | What | Search for | What to do |
 | --- | --- | --- |
-| **Form ID** | `YOUR_FORM_ID` | Sign up at formspree.io, create a form and paste your ID in. Full steps are in the comment above the form. File uploads need a paid Formspree plan. On the free plan the text still comes through. |
+| **Form** | `formsubmit.co` | The form emails every request, photos included, to platedmediaco@gmail.com through FormSubmit (free). After your first test, click **Activate Form** in the email FormSubmit sends. Full steps are in the comment above the form. |
 | **Phone number** | `04XX XXX XXX` | Replace the number in both the `href="tel:..."` and the visible text, then delete the "(placeholder)" note. |
 | **Instagram** | `instagram.com/platedmediaco` | Check the handle is right. |
 | **Reviews** | `PLACEHOLDER REVIEWS` | Swap in real reviews from real clients, with their permission. |

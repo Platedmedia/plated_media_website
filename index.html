@@ -977,20 +977,24 @@
         </div>
 
         <!--
-          FORMSPREE SETUP (free plan available):
-          1. Go to https://formspree.io and sign up with hello@platedmediaco.com.au.
-          2. Click "+ New form", name it "Free sample ad".
-          3. Formspree shows an endpoint like https://formspree.io/f/abcdwxyz.
-             Copy the last part (abcdwxyz) and paste it over YOUR_FORM_ID below.
-          4. Submit the form once yourself and confirm the email Formspree sends you.
-          Note: Formspree only accepts file uploads on its paid plans. On the free plan the
-          text fields still arrive, and you can ask people to email/DM their photos instead.
+          WHERE THIS FORM SENDS: FormSubmit (formsubmit.co), free, no account needed.
+          Every request is emailed to platedmediaco@gmail.com with the photos attached.
+          One-time setup:
+          1. Upload this file to GitHub, open your live site and send yourself a test request.
+          2. FormSubmit emails platedmediaco@gmail.com: "Action required: activate form".
+             Click "Activate Form". Check Spam/Promotions if you can't see it.
+          3. Optional, recommended: the activation page gives you a random code, for example
+             https://formsubmit.co/a1b2c3d4e5f6... Paste that code over the email address in
+             action="..." below so spammers can't read your address from the page.
+          If you move to your own domain, change the _next address to match.
         -->
-        <form class="form reveal" id="sample-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" enctype="multipart/form-data">
+        <form class="form reveal" id="sample-form" action="https://formsubmit.co/platedmediaco@gmail.com" method="POST" enctype="multipart/form-data">
           <input type="hidden" name="_subject" value="New free sample ad request">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_next" value="https://tawhz1.github.io/plated_media_website/?sent=1#free-ad">
           <div class="hp" aria-hidden="true">
-            <label for="f-gotcha">Leave this empty</label>
-            <input type="text" id="f-gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
+            <label for="f-honey">Leave this empty</label>
+            <input type="text" id="f-honey" name="_honey" tabindex="-1" autocomplete="off">
           </div>
 
           <div class="field">
@@ -1018,7 +1022,7 @@
             <label for="f-photos">Photos of your food <span style="font-weight:500;color:var(--muted)">(up to 5)</span></label>
             <div class="upload">
               <input type="file" id="f-photos" name="photos" accept="image/*" multiple aria-describedby="f-photos-hint">
-              <p class="upload__text" style="margin:0">Tap to choose photos<span id="f-photos-hint">or drag them here. Phone photos are perfect.</span></p>
+              <p class="upload__text" style="margin:0">Tap to choose photos<span id="f-photos-hint">or drag them here. Phone photos are perfect, I'll shrink them for sending.</span></p>
               <p class="upload__files" id="f-photos-list" aria-live="polite" style="margin-bottom:0"></p>
             </div>
           </div>
@@ -1172,47 +1176,102 @@
         });
       });
 
-      /* --- Photo upload: show chosen file names, cap at 5 --- */
+      /* --- Photo upload ---
+         Phone photos are often 3-8 MB each, and FormSubmit emails attachments with a
+         total limit of about 10 MB. So each photo (up to 5) is shrunk in the browser to
+         a 1600px JPEG, roughly 300-600 KB, and attached as photo-1, photo-2 ... If a
+         browser can't do that, the original files are sent instead. */
+      var MAX_PHOTOS = 5, MAX_SIDE = 1600, MAX_TOTAL = 9.5 * 1024 * 1024;
+      var form = document.getElementById('sample-form');
+      var status = document.getElementById('form-status');
+      var btn = form.querySelector('button[type="submit"]');
       var fileInput = document.getElementById('f-photos');
       var fileList = document.getElementById('f-photos-list');
       var upload = fileInput.closest('.upload');
+      var preparing = null;
+
+      function shrink(file) {
+        return new Promise(function (resolve) {
+          if (!/^image\//.test(file.type) || /gif|svg/.test(file.type)) return resolve(file);
+          var url = URL.createObjectURL(file), img = new Image();
+          img.onload = function () {
+            var scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+            var c = document.createElement('canvas');
+            c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+            URL.revokeObjectURL(url);
+            c.toBlob(function (blob) {
+              if (!blob || blob.size >= file.size) return resolve(file);
+              resolve(new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }));
+            }, 'image/jpeg', 0.82);
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); resolve(file); }; // e.g. HEIC on some browsers
+          img.src = url;
+        });
+      }
+      function clearPrepared() {
+        form.querySelectorAll('input[data-prepared]').forEach(function (el) { el.remove(); });
+        fileInput.name = 'photos';
+      }
+      function totalSize() {
+        var n = 0;
+        form.querySelectorAll('input[type="file"]').forEach(function (el) {
+          if (el.name) Array.prototype.forEach.call(el.files, function (f) { n += f.size; });
+        });
+        return n;
+      }
+      function mb(n) { return (n / 1024 / 1024).toFixed(1) + ' MB'; }
+
       fileInput.addEventListener('change', function () {
+        clearPrepared();
+        status.textContent = ''; status.className = 'form__status';
         var files = Array.prototype.slice.call(fileInput.files);
         if (!files.length) { fileList.textContent = ''; return; }
-        var names = files.map(function (f) { return f.name; }).join(', ');
-        fileList.textContent = files.length + (files.length === 1 ? ' photo: ' : ' photos: ') + names +
-          (files.length > 5 ? ' (5 is plenty, but I’ll take a look at them all)' : '');
+        var extra = files.length > MAX_PHOTOS ? ' (only the first ' + MAX_PHOTOS + ' will be sent)' : '';
+        files = files.slice(0, MAX_PHOTOS);
+        fileList.textContent = 'Getting ' + files.length + (files.length === 1 ? ' photo' : ' photos') + ' ready\u2026';
+        btn.disabled = true;
+        var canSwap = typeof DataTransfer === 'function' && window.Promise;
+        preparing = (canSwap ? Promise.all(files.map(shrink)) : Promise.resolve(null)).then(function (ready) {
+          if (ready) {
+            try {
+              ready.forEach(function (f, i) {
+                var dt = new DataTransfer(); dt.items.add(f);
+                var el = document.createElement('input');
+                el.type = 'file'; el.name = 'photo-' + (i + 1); el.hidden = true; el.setAttribute('data-prepared', '');
+                el.files = dt.files;
+                form.appendChild(el);
+              });
+              fileInput.name = ''; // the shrunk copies are sent instead of the originals
+            } catch (err) { clearPrepared(); }
+          }
+          var names = files.map(function (f) { return f.name; }).join(', ');
+          fileList.textContent = files.length + (files.length === 1 ? ' photo: ' : ' photos: ') + names + extra + ' \u00b7 ' + mb(totalSize());
+        }).catch(function () { clearPrepared(); }).then(function () { btn.disabled = false; preparing = null; });
       });
       ['dragenter', 'dragover'].forEach(function (t) { upload.addEventListener(t, function () { upload.classList.add('is-drag'); }); });
       ['dragleave', 'drop'].forEach(function (t) { upload.addEventListener(t, function () { upload.classList.remove('is-drag'); }); });
 
-      /* --- Form: send in the background so people stay on the page --- */
-      var form = document.getElementById('sample-form');
-      var status = document.getElementById('form-status');
+      /* --- Form: normal post to FormSubmit, which then sends people back here --- */
       form.addEventListener('submit', function (e) {
-        if (!window.fetch || !window.FormData) return; // old browser: normal submit
-        e.preventDefault();
-        if (form.action.indexOf('YOUR_FORM_ID') !== -1) {
+        if (preparing) { e.preventDefault(); return; }
+        if (totalSize() > MAX_TOTAL) {
+          e.preventDefault();
           status.className = 'form__status is-err';
-          status.textContent = 'This form isn’t connected yet. Please email hello@platedmediaco.com.au instead.';
+          status.textContent = 'Those photos are a bit big to email (' + mb(totalSize()) + '). Please choose fewer photos and try again.';
           return;
         }
-        var btn = form.querySelector('button[type="submit"]');
-        btn.disabled = true; btn.textContent = 'Sending…';
-        status.className = 'form__status'; status.textContent = '';
-        fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } })
-          .then(function (r) {
-            if (!r.ok) throw new Error('Request failed');
-            form.reset(); fileList.textContent = '';
-            status.className = 'form__status is-ok';
-            status.textContent = 'Got it, thanks! I’ll be in touch soon. — Q';
-          })
-          .catch(function () {
-            status.className = 'form__status is-err';
-            status.textContent = 'Sorry, that didn’t send. Please try again, or email hello@platedmediaco.com.au.';
-          })
-          .then(function () { btn.disabled = false; btn.textContent = 'Send'; });
+        btn.disabled = true; btn.textContent = 'Sending\u2026';
       });
+      // Page reloaded from the back button after sending: re-enable the button.
+      window.addEventListener('pageshow', function () { btn.disabled = false; btn.textContent = 'Send'; });
+
+      // Back from FormSubmit: show a thank-you message.
+      if (/[?&]sent=1/.test(location.search)) {
+        status.className = 'form__status is-ok';
+        status.textContent = 'Got it, thanks! Your photos are on their way to me. I\u2019ll be in touch soon. \u2014 Q';
+        if (history.replaceState) history.replaceState(null, '', location.pathname + '#free-ad');
+      }
     })();
   </script>
 </body>
