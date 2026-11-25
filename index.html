@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Plated Media Co website - VERSION 16 (25 Nov 2026). Only uses photos that exist in images/. -->
+<!-- Plated Media Co website - VERSION 19 (26 Nov 2026). Only uses photos that exist in images/. -->
 <html lang="en-AU">
 <head>
   <meta charset="utf-8">
@@ -222,8 +222,8 @@
 
     /* ---------- 3. The work ---------- */
     .work-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(12px, 2.5vw, 28px); }
-    @media (min-width: 820px) {
-      .work-grid { grid-template-columns: repeat(3, 1fr); }
+    @media (min-width: 1000px) {
+      .work-grid { grid-template-columns: repeat(4, 1fr); }
     }
     .work-card {
       all: unset; box-sizing: border-box;
@@ -299,6 +299,22 @@
     .card__icon svg { width: 26px; height: 26px; }
     .card h3 { margin-bottom: 10px; }
     .card p { margin: 0; color: var(--ink-2); }
+
+    /* ---------- 5b. Gallery ---------- */
+    .gallery { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 12px; }
+    @media (min-width: 900px) { .gallery { columns: 3; column-gap: 22px; } }
+    .gallery > li { break-inside: avoid; margin: 0 0 12px; }
+    @media (min-width: 900px) { .gallery > li { margin-bottom: 22px; } }
+    .gallery-card {
+      all: unset; box-sizing: border-box; display: block; width: 100%; cursor: zoom-in;
+      background: #fff; padding: 6px 6px 10px; border-radius: var(--radius); box-shadow: var(--shadow);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .gallery-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .gallery-card:focus-visible { outline: 3px solid var(--red); outline-offset: 4px; }
+    .gallery-card .frame { border-radius: 9px; min-height: 80px; }
+    .gallery-card img { width: 100%; height: auto; }
+    .gallery-card__cap { display: block; padding: 8px 4px 0; font-weight: 700; font-size: .9rem; line-height: 1.3; }
 
     /* ---------- 5. Made in the west ---------- */
     .west { padding-block: 0; }
@@ -678,6 +694,22 @@
             </button>
           </li>
           <li>
+            <button class="work-card" type="button" data-src="images/rotisserie-night-market.jpg" data-caption="Rotisserie chicken · Night market">
+              <span class="frame"><span class="tag">Concept</span>
+                <img src="images/rotisserie-night-market.jpg" data-fallback="./rotisserie-night-market.jpg" alt="Rotisserie chickens turning over a smoky charcoal grill at a busy night market under festoon lights, with the Plated Media Co logo above" loading="lazy" width="1200" height="1200">
+              </span>
+              <span class="work-card__cap">Rotisserie chicken · Night market</span>
+            </button>
+          </li>
+          <li>
+            <button class="work-card" type="button" data-src="images/picnic-westgate.jpg" data-caption="Picnic spread · Westgate">
+              <span class="frame"><span class="tag">Concept</span>
+                <img src="images/picnic-westgate.jpg" data-fallback="./picnic-westgate.jpg" alt="A sunset picnic by the river below a cable-stayed bridge: Plated Media Co takeaway boxes, a cheese board and a bottle of local wine on a rug" loading="lazy" width="1200" height="1200">
+              </span>
+              <span class="work-card__cap">Picnic spread · Westgate</span>
+            </button>
+          </li>
+          <li>
             <button class="work-card" type="button" data-src="images/work-burger-diner.jpg" data-caption="Diner burger · Poster ad">
               <span class="frame"><span class="tag">Concept</span>
                 <img src="images/work-burger-diner.jpg" data-fallback="./new%202.png" alt="A retro diner menu poster ad for Plated Media Co with a cheeseburger, crinkle-cut fries and a pickle" loading="lazy" width="906" height="1125">
@@ -775,6 +807,64 @@
             <li>Maidstone</li><li>Braybrook</li><li>Footscray</li><li>Sunshine</li><li>Maribyrnong</li>
           </ul>
         </div>
+      </div>
+    </section>
+
+    <!-- ===================== 5b. GALLERY =====================
+         Photos keep their own shape (tall, wide or square) and stack neatly:
+         2 columns on phones, 3 on wide screens. Tap any photo to see it bigger.
+         To add a photo: copy one <li>...</li> block and change the file name and caption. -->
+    <section class="section" id="gallery" aria-labelledby="gallery-title">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <p class="kicker">Gallery</p>
+          <h2 id="gallery-title">Around the <span class="red">inner west.</span></h2>
+          <p class="lede">Cafes, trams, laneway walls and the food that brings them together. More pieces from around the neighbourhood.</p>
+        </div>
+        <ul class="gallery reveal-group">
+          <li>
+            <button class="gallery-card" type="button" data-src="images/cafe-tram.jpg" data-caption="Corner cafe · Tram stop">
+              <span class="frame"><img src="images/cafe-tram.jpg" data-fallback="./cafe-tram.jpg" alt="People sitting outside a brick corner cafe with takeaway coffees as a green and yellow tram passes, the Plated Media Co logo painted on the wall" loading="lazy" width="1200" height="1200"></span>
+              <span class="gallery-card__cap">Corner cafe · Tram stop</span>
+            </button>
+          </li>
+          <li>
+            <button class="gallery-card" type="button" data-src="images/mural-wall.jpg" data-caption="Laneway mural">
+              <span class="frame"><img src="images/mural-wall.jpg" data-fallback="./mural-wall.jpg" alt="A painted mural of a loaded plate and the Plated Media Co logo on a brick laneway wall, with a wooden table and two chairs in front" loading="lazy" width="1200" height="1200"></span>
+              <span class="gallery-card__cap">Laneway mural</span>
+            </button>
+          </li>
+          <li>
+            <button class="gallery-card" type="button" data-src="images/chef-hands.jpg" data-caption="Chef's hands · Sushi, pasta, tacos">
+              <span class="frame"><img src="images/chef-hands.jpg" data-fallback="./chef-hands.jpg" alt="Three panels of a chef's hands at work: rolling sushi, lifting fresh pasta from a floured board and finishing tacos with coriander" loading="lazy" width="1200" height="1200"></span>
+              <span class="gallery-card__cap">Chef's hands · Sushi, pasta, tacos</span>
+            </button>
+          </li>
+          <li>
+            <button class="gallery-card" type="button" data-src="images/tram-ticket.jpg" data-caption="Next stop: dinner">
+              <span class="frame"><img src="images/tram-ticket.jpg" data-fallback="./tram-ticket.jpg" alt="A vintage Melbourne tram ticket poster reading Next Stop: Dinner, with a steak on a plate, Zone: Hungry and Route: Dinnertime" loading="lazy" width="1200" height="1200"></span>
+              <span class="gallery-card__cap">Next stop: dinner</span>
+            </button>
+          </li>
+          <li>
+            <button class="gallery-card" type="button" data-src="images/cafe-four-seasons.jpg" data-caption="Cafe, four seasons">
+              <span class="frame"><img src="images/cafe-four-seasons.jpg" data-fallback="./cafe-four-seasons.jpg" alt="Illustrated cafe table with a steaming coffee on a Melbourne shopping street, shown four ways: summer, rain, a windy day with a tram, and golden evening" loading="lazy" width="1200" height="1200"></span>
+              <span class="gallery-card__cap">Cafe, four seasons</span>
+            </button>
+          </li>
+          <li>
+            <button class="gallery-card" type="button" data-src="images/food-grid.jpg" data-caption="Every kitchen in the west">
+              <span class="frame"><img src="images/food-grid.jpg" data-fallback="./food-grid.jpg" alt="A grid of nine dishes on dark plates: pho, Ethiopian chicken on injera, seafood pasta, souvlaki, soup dumplings, butter chicken, pide, samosas and avocado toast" loading="lazy" width="1200" height="1200"></span>
+              <span class="gallery-card__cap">Every kitchen in the west</span>
+            </button>
+          </li>
+          <li>
+            <button class="gallery-card" type="button" data-src="images/coffee-print.jpg" data-caption="Coffee print">
+              <span class="frame"><img src="images/coffee-print.jpg" data-fallback="./coffee-print.jpg" alt="A two-colour risograph-style print of a steaming cup of coffee in red and black ink" loading="lazy" width="1200" height="1490"></span>
+              <span class="gallery-card__cap">Coffee print</span>
+            </button>
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -1193,8 +1283,14 @@
           return;
         }
         var frame = img.closest('.frame');
-        var spot = img.closest('.work-grid > li, .prompt-grid > li, .strip > li');
-        if (spot) spot.classList.add('is-missing-spot');
+        var spot = img.closest('.work-grid > li, .prompt-grid > li, .strip > li, .gallery > li');
+        if (spot) {
+          spot.classList.add('is-missing-spot');
+          var list = spot.parentElement;
+          if (list.classList.contains('gallery') && !list.querySelector(':scope > li:not(.is-missing-spot)')) {
+            list.closest('section').hidden = true; // no gallery photos uploaded yet
+          }
+        }
         if (frame) frame.classList.add('is-missing');
         if (window.console) console.warn('Image not found: ' + img.getAttribute('src'));
       }
@@ -1332,7 +1428,7 @@
       dialog.querySelector('.lightbox__close').addEventListener('click', closeLightbox);
       dialog.addEventListener('click', function (e) { if (e.target === dialog) closeLightbox(); });
 
-      document.querySelectorAll('.work-card').forEach(function (btn) {
+      document.querySelectorAll('.work-card, .gallery-card').forEach(function (btn) {
         btn.setAttribute('aria-label', 'View larger: ' + (btn.getAttribute('data-caption') || 'image'));
         btn.addEventListener('click', function () {
           if (btn.querySelector('.frame.is-missing')) return; // nothing to show yet
