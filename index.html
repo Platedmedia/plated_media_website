@@ -1,11 +1,11 @@
 <!doctype html>
-<!-- Plated Media Co website - VERSION 19 (26 Nov 2026). Only uses photos that exist in images/. -->
+<!-- Plated Media Co website - VERSION 20 (26 Nov 2026). Only uses photos that exist in images/. -->
 <html lang="en-AU">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Plated Media Co | Food Video Ads Melbourne West</title>
-  <meta name="description" content="Short, scroll-stopping food video ads for cafes, takeaways, restaurants and bakeries in Melbourne's inner west. Made by Q, a working chef from Maidstone. Get a free 15-second sample ad.">
+  <meta name="description" content="Short, scroll-stopping food video ads for cafes, takeaways, restaurants and bakeries in Melbourne's inner west. Made by Q, a working chef from Maidstone. Get a free poster for your shop or socials.">
   <meta name="theme-color" content="#1c1b1a">
 
   <!-- Open Graph / social sharing.
@@ -13,7 +13,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Plated Media Co">
   <meta property="og:title" content="Plated Media Co | Food Video Ads Melbourne West">
-  <meta property="og:description" content="Ads made by a chef. Short video ads for local food businesses in Footscray, Maidstone, Braybrook, Sunshine and Maribyrnong.">
+  <meta property="og:description" content="Ads made by a chef. Posters, menus, social graphics and video ads for local food businesses in Footscray, Maidstone, Braybrook, Sunshine and Maribyrnong. Get a free poster.">
   <meta property="og:url" content="https://platedmedia.github.io/plated-media-website/">
   <meta property="og:image" content="https://platedmedia.github.io/plated-media-website/images/hero-chef-plating.jpg">
   <meta property="og:image:alt" content="Chef Q plating salmon with tweezers">
@@ -348,7 +348,14 @@
 
     /* ---------- 7. Packages ---------- */
     .packages { display: grid; gap: 22px; align-items: center; }
-    @media (min-width: 880px) { .packages { grid-template-columns: 1fr 1.12fr 1fr; gap: 26px; } }
+    .services { align-items: stretch; }
+    @media (min-width: 640px) { .services { grid-template-columns: 1fr 1fr; } .services .pkg--feature { grid-column: 1 / -1; } }
+    @media (min-width: 980px) { .services { grid-template-columns: repeat(3, 1fr); gap: 26px; } .services .pkg--feature { grid-column: span 2; } }
+    .services .pkg--feature { transform: none; }
+    .poster-examples { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 2.5vw, 28px); max-width: 720px; margin: 0 auto clamp(36px, 6vw, 56px); }
+    .poster-example { margin: 0; }
+    .poster-example .frame { aspect-ratio: 1 / 1; border-radius: 9px; }
+    .poster-example img { width: 100%; height: 100%; object-fit: cover; }
     .pkg {
       position: relative;
       background: #fbf7f0; border-radius: 18px;
@@ -375,7 +382,6 @@
       box-shadow: 0 30px 60px -20px rgba(28,27,26,.6);
       --focus: var(--cream);
     }
-    @media (min-width: 880px) { .pkg--feature { transform: scale(1.04); } }
     .pkg--feature .pkg__price small, .pkg--feature .pkg__note { color: #cfc5b6; }
     .badge {
       position: absolute; top: -14px; left: 50%; transform: translateX(-50%) rotate(-2deg);
@@ -593,7 +599,7 @@
       <a class="nav__logo" href="#top" aria-label="Plated Media Co, back to top">
         <img src="images/logo-wordmark.jpg" alt="Plated Media Co" width="560" height="212">
       </a>
-      <a class="btn" href="#free-ad">Free ad</a>
+      <a class="btn" href="#free-ad">Free poster</a>
     </div>
   </header>
 
@@ -608,7 +614,7 @@
         <p class="kicker hero__kicker">Ads made by a chef · Maidstone, VIC</p>
         <h1 id="hero-title"><span>Real food.</span> <span>Chef's eye.</span> <span class="red">Made in the west.</span></h1>
         <p class="hero__sub">Short video ads for Melbourne's local food businesses.</p>
-        <a class="btn" href="#free-ad">Get your free ad
+        <a class="btn" href="#free-ad">Get a free poster
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
         </a>
         <p class="hero__meta">Cafes · Takeaways · Restaurants · Bakeries</p>
@@ -643,10 +649,10 @@
           <h2 id="reel-title">Fifteen seconds. <span class="red">Made by a chef.</span></h2>
           <p class="lede">This is a Plated Media Co motion ad: short, clean and built to stop the scroll. Yours would star your food.</p>
           <ul class="reel__points">
-            <li><strong>Monthly subscriptions</strong> for fresh ads all year</li>
-            <li><strong>One-off ads</strong> whenever you need one</li>
+            <li><strong>Video ads</strong> from $150</li>
+            <li><strong>Video + 2 posters</strong> bundle for $250</li>
           </ul>
-          <a class="btn" href="#free-ad">Get your free ad</a>
+          <a class="btn" href="#services">See services &amp; prices</a>
         </div>
       </div>
     </section>
@@ -879,7 +885,7 @@
             <div class="how__intro reveal">
               <p class="kicker">How it works</p>
               <h2 id="how-title">Three steps. <span class="red">No pressure.</span></h2>
-              <p class="lede">You send the photos, I do the rest. Your free sample ad is yours to keep, whether you sign up or not.</p>
+              <p class="lede">You send the photos, I do the rest. Your free poster is yours to keep, whether you order anything else or not.</p>
             </div>
             <ol class="steps reveal-group">
               <li class="step">
@@ -892,73 +898,110 @@
               <li class="step">
                 <span class="step__num" aria-hidden="true">02</span>
                 <div>
-                  <h3><span class="sr-only">Step 2: </span>Get a free 15-second ad</h3>
-                  <p>I turn them into a short video ad, ready for social media.</p>
+                  <h3><span class="sr-only">Step 2: </span>Get a free poster</h3>
+                  <p>I design a poster from your real food, ready to print for the shop or post on socials.</p>
                 </div>
               </li>
               <li class="step">
                 <span class="step__num" aria-hidden="true">03</span>
                 <div>
-                  <h3><span class="sr-only">Step 3: </span>Love it? Pick a package</h3>
-                  <p>Don't love it? No worries. No pressure, no catch.</p>
+                  <h3><span class="sr-only">Step 3: </span>Love it? Pick a service</h3>
+                  <p>More posters, a menu, a social pack or a video ad. No pressure, no catch.</p>
                 </div>
               </li>
             </ol>
-            <a class="btn reveal" href="#free-ad">Start with step 01</a>
+            <a class="btn reveal" href="#free-ad">Get a free poster</a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===================== 7. PACKAGES ===================== -->
-    <!-- Edit the bullet points below to match exactly what each package includes. -->
-    <section class="section" id="packages" aria-labelledby="packages-title" style="background: var(--cream-2);">
+    <!-- ===================== 7. SERVICES & PRICES =====================
+         Change a price or bullet point below and it updates on the page.
+         "Order this" opens an email to platedmediaco@gmail.com with the service in the subject. -->
+    <section class="section" id="services" aria-labelledby="services-title" style="background: var(--cream-2);">
       <div class="wrap">
         <div class="section-head reveal" style="text-align:center">
-          <p class="kicker">Packages</p>
-          <h2 id="packages-title">Simple prices. <span class="red">No lock-in.</span></h2>
-          <p class="lede" style="margin-inline:auto">Affordable food video ads for small businesses. Start with a free sample, then pick what suits you.</p>
+          <p class="kicker">Services</p>
+          <h2 id="services-title">Simple prices. <span class="red">No surprises.</span></h2>
+          <p class="lede" style="margin-inline:auto">Posters, menus, social graphics and video ads for local food businesses. Start with a free poster, then pick what suits you.</p>
         </div>
 
-        <div class="packages reveal-group">
+        <div class="poster-examples reveal-group">
+          <figure class="poster-example">
+            <button class="work-card" type="button" data-src="images/tram-ticket.jpg" data-caption="Poster example · Next stop: dinner">
+              <span class="frame"><span class="tag">Poster</span><img src="images/tram-ticket.jpg" data-fallback="./tram-ticket.jpg" alt="Example poster: a vintage Melbourne tram ticket design reading Next Stop: Dinner, with a steak on a plate" loading="lazy" width="1200" height="1200"></span>
+              <span class="work-card__cap">Next stop: dinner</span>
+            </button>
+          </figure>
+          <figure class="poster-example">
+            <button class="work-card" type="button" data-src="images/mural-wall.jpg" data-caption="Poster example · Laneway mural">
+              <span class="frame"><span class="tag">Poster</span><img src="images/mural-wall.jpg" data-fallback="./mural-wall.jpg" alt="Example poster: a painted mural of a loaded plate and the Plated Media Co logo on a brick laneway wall" loading="lazy" width="1200" height="1200"></span>
+              <span class="work-card__cap">Laneway mural</span>
+            </button>
+          </figure>
+        </div>
+
+        <div class="packages services reveal-group">
           <article class="pkg">
-            <h3>Single ad</h3>
-            <p class="pkg__price">$150</p>
-            <p class="pkg__note">One-off</p>
+            <h3>Poster or flyer</h3>
+            <p class="pkg__price">$60&ndash;80</p>
+            <p class="pkg__note">One design</p>
             <ul>
-              <li>One short video ad</li>
+              <li>Your real food, your shop, your offer</li>
+              <li>Print-ready for the window or counter</li>
+              <li>Sized for socials too</li>
+            </ul>
+            <a class="btn btn--ghost" href="mailto:platedmediaco@gmail.com?subject=Poster%20or%20flyer">Order this</a>
+          </article>
+          <article class="pkg">
+            <h3>Social ad pack</h3>
+            <p class="pkg__price">$100</p>
+            <p class="pkg__note">3 graphics</p>
+            <ul>
+              <li>Three matching graphics for socials</li>
+              <li>Specials, new dishes or events</li>
+              <li>Sized for Instagram and Facebook</li>
+            </ul>
+            <a class="btn btn--ghost" href="mailto:platedmediaco@gmail.com?subject=Social%20ad%20pack">Order this</a>
+          </article>
+          <article class="pkg">
+            <h3>Menu poster</h3>
+            <p class="pkg__price">$120&ndash;150</p>
+            <p class="pkg__note">Menu board</p>
+            <ul>
+              <li>Your full menu, laid out clearly</li>
+              <li>Prices, photos and specials</li>
+              <li>Print-ready, easy to update</li>
+            </ul>
+            <a class="btn btn--ghost" href="mailto:platedmediaco@gmail.com?subject=Menu%20poster">Order this</a>
+          </article>
+          <article class="pkg">
+            <h3>Video ad</h3>
+            <p class="pkg__price">$150</p>
+            <p class="pkg__note">Paid only</p>
+            <ul>
+              <li>A short, scroll-stopping video ad</li>
               <li>Made from your real food photos</li>
               <li>Ready for Instagram, TikTok and Facebook</li>
             </ul>
-            <a class="btn btn--ghost" href="#free-ad">Start with a free ad</a>
+            <a class="btn btn--ghost" href="mailto:platedmediaco@gmail.com?subject=Video%20ad">Order this</a>
           </article>
-
           <article class="pkg pkg--feature">
             <span class="badge">Best value</span>
-            <h3>Monthly</h3>
-            <p class="pkg__price">$450<small>/ month</small></p>
-            <p class="pkg__note">No lock-in. Stop any time.</p>
-            <ul>
-              <li>Fresh ads every month</li>
-              <li>New specials, menus and seasonal dishes</li>
-              <li>Your feed stays busy without you lifting a finger</li>
-            </ul>
-            <a class="btn" href="#free-ad">Start with a free ad</a>
-          </article>
-
-          <article class="pkg">
-            <h3>Three ads</h3>
+            <h3>Video + posters bundle</h3>
             <p class="pkg__price">$250</p>
-            <p class="pkg__note">Bundle</p>
+            <p class="pkg__note">1 video ad + 2 posters</p>
             <ul>
-              <li>Three short video ads</li>
-              <li>Mix dishes, specials or a menu launch</li>
-              <li>Ready for Instagram, TikTok and Facebook</li>
+              <li>A short video ad for socials</li>
+              <li>Two posters to match</li>
+              <li>One look across screen and shop window</li>
             </ul>
-            <a class="btn btn--ghost" href="#free-ad">Start with a free ad</a>
+            <a class="btn" href="mailto:platedmediaco@gmail.com?subject=Video%20plus%20posters%20bundle">Order this</a>
           </article>
         </div>
-        <p class="pkg-foot reveal">Every package starts with a free 15-second sample. Prices in AUD.</p>
+        <p class="pkg-foot reveal">Your first poster is free. Video ads are paid only. Prices in AUD.</p>
+        <p class="pkg-foot reveal" style="margin-top:16px"><a class="btn" href="#free-ad">Get a free poster</a></p>
       </div>
     </section>
 
@@ -1140,7 +1183,7 @@
           </figure>
           <figure class="review">
             <div class="review__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <blockquote style="margin:0"><p>Want to be one of the first? Grab a free sample ad below and tell me what you think.</p></blockquote>
+            <blockquote style="margin:0"><p>Want to be one of the first? Grab a free poster below and tell me what you think.</p></blockquote>
             <figcaption>Placeholder: real review coming soon</figcaption>
           </figure>
         </div>
@@ -1151,13 +1194,13 @@
     <section class="section section--dark form-section" id="free-ad" aria-labelledby="form-title">
       <div class="wrap form-layout">
         <div class="reveal">
-          <p class="kicker">Free sample ad</p>
-          <h2 id="form-title">Get your <span class="red">free ad.</span></h2>
-          <p class="lede" style="margin-top:20px">Send me 5 photos of your real food and I'll make you a free 15-second video ad. No catch, no lock-in, no hard sell.</p>
+          <p class="kicker">Free poster</p>
+          <h2 id="form-title">Get a <span class="red">free poster.</span></h2>
+          <p class="lede" style="margin-top:20px">Send me 5 photos of your real food and I'll design you a free poster for your shop or socials. No catch, no lock-in, no hard sell. Video ads are a paid service.</p>
           <ul class="promise">
             <li>I reply within a couple of days</li>
-            <li>Your photos are only used to make your ad</li>
-            <li>Keep the sample, even if you don't sign up</li>
+            <li>Your photos are only used to make your poster</li>
+            <li>Keep the poster, even if you don't order anything else</li>
           </ul>
         </div>
 
@@ -1177,11 +1220,11 @@
           is only a backup for browsers with JavaScript turned off.
         -->
         <form class="form reveal" id="sample-form" action="https://formsubmit.co/platedmediaco@gmail.com" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="_subject" value="New free sample ad request">
+          <input type="hidden" name="_subject" value="New free poster request">
           <input type="hidden" name="_template" value="table">
           <input type="hidden" name="_next" id="f-next" value="https://platedmedia.github.io/plated-media-website/?sent=1#free-ad">
           <div class="form__thanks field--full" id="form-thanks" role="status" tabindex="-1" hidden>
-            <p class="form__thanks-title">Thanks! Your ad request is in.</p>
+            <p class="form__thanks-title">Thanks! Your free poster request is in.</p>
             <p class="form__thanks-text">Your details and photos are on their way to me. I'll be in touch within a couple of days. &mdash; Q</p>
           </div>
           <div class="hp" aria-hidden="true">
@@ -1220,7 +1263,7 @@
             <p class="upload__files" id="f-photos-list" aria-live="polite"></p>
           </div>
           <div class="field--full" style="display:grid;gap:12px">
-            <button class="btn" type="submit">Send</button>
+            <button class="btn" type="submit">Get a free poster</button>
             <p class="form__status" id="form-status" role="status" aria-live="polite"></p>
             <p class="form__fine">By sending, you agree to my <a href="privacy.html">privacy policy</a>. I never sell your details.</p>
           </div>
@@ -1283,7 +1326,7 @@
           return;
         }
         var frame = img.closest('.frame');
-        var spot = img.closest('.work-grid > li, .prompt-grid > li, .strip > li, .gallery > li');
+        var spot = img.closest('.work-grid > li, .prompt-grid > li, .strip > li, .gallery > li, .poster-example');
         if (spot) {
           spot.classList.add('is-missing-spot');
           var list = spot.parentElement;
@@ -1549,7 +1592,7 @@
         btn.disabled = true; btn.textContent = 'Sending\u2026';
       });
       // Page reloaded from the back button after sending: re-enable the button.
-      window.addEventListener('pageshow', function () { btn.disabled = false; btn.textContent = 'Send'; });
+      window.addEventListener('pageshow', function () { btn.disabled = false; btn.textContent = 'Get a free poster'; });
 
       // Where FormSubmit sends people after they press Send: back to this same page,
       // on whatever address the site is using right now (works on github.io or your own domain).
