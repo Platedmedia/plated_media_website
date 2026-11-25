@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Plated Media Co website - VERSION 12 (25 Nov 2026). Only uses photos that exist in images/. -->
+<!-- Plated Media Co website - VERSION 14 (25 Nov 2026). Only uses photos that exist in images/. -->
 <html lang="en-AU">
 <head>
   <meta charset="utf-8">
@@ -577,9 +577,17 @@
     <section class="section reel" id="reel" aria-labelledby="reel-title">
       <div class="wrap reel__inner">
         <div class="reel__video reveal">
-          <video id="motion-ad" src="images/motion-ad.mp4" poster="images/motion-ad-poster.jpg"
+          <!-- The browser tries each <source> in order and plays the first one it finds.
+               1st: images/motion-ad.mp4 (where it should live).
+               2nd: the copy currently at the top of the repo, named "motion:ad.mp4"
+                    (the colon has to be written as %3A in a web address).
+               Once images/motion-ad.mp4 is uploaded you can delete the 2nd line. -->
+          <video id="motion-ad" poster="images/motion-ad-poster.jpg"
                  autoplay muted loop playsinline preload="auto" width="960" height="960"
-                 aria-label="Plated Media Co motion ad: a chef's knife, monthly and one-off ad options, then the Plated Media Co logo and tagline, Ads made by a chef"></video>
+                 aria-label="Plated Media Co motion ad: a chef's knife, monthly and one-off ad options, then the Plated Media Co logo and tagline, Ads made by a chef">
+            <source src="images/motion-ad.mp4" type="video/mp4">
+            <source src="./motion%3Aad.mp4" type="video/mp4">
+          </video>
         </div>
         <div class="reel__copy reveal">
           <p class="kicker">Watch</p>
@@ -639,7 +647,7 @@
           <li>
             <button class="work-card" type="button" data-src="images/work-burger-diner.jpg" data-caption="Diner burger · Poster ad">
               <span class="frame"><span class="tag">Concept</span>
-                <img src="images/work-burger-diner.jpg" alt="A retro diner menu poster ad for Plated Media Co with a cheeseburger, crinkle-cut fries and a pickle" loading="lazy" width="906" height="1125">
+                <img src="images/work-burger-diner.jpg" data-fallback="./new%202.png" alt="A retro diner menu poster ad for Plated Media Co with a cheeseburger, crinkle-cut fries and a pickle" loading="lazy" width="906" height="1125">
               </span>
               <span class="work-card__cap">Diner burger · Poster ad</span>
             </button>
@@ -647,7 +655,7 @@
           <li>
             <button class="work-card" type="button" data-src="images/work-donut-logo.jpg" data-caption="Chocolate donut · Logo ad">
               <span class="frame"><span class="tag">Concept</span>
-                <img src="images/work-donut-logo.jpg" alt="The Plated Media Co logo pressed into the glossy chocolate glaze of a donut, floating on a pastel background" loading="lazy" width="1200" height="1490">
+                <img src="images/work-donut-logo.jpg" data-fallback="./new%203.png" alt="The Plated Media Co logo pressed into the glossy chocolate glaze of a donut, floating on a pastel background" loading="lazy" width="1200" height="1490">
               </span>
               <span class="work-card__cap">Chocolate donut · Logo ad</span>
             </button>
@@ -655,7 +663,7 @@
           <li>
             <button class="work-card" type="button" data-src="images/work-claymation-chef.jpg" data-caption="Claymation chef · Animated ad">
               <span class="frame"><span class="tag">Concept</span>
-                <img src="images/work-claymation-chef.jpg" alt="A claymation version of Q in his chef's whites, flipping a pancake in a little clay kitchen" loading="lazy" width="1200" height="1490">
+                <img src="images/work-claymation-chef.jpg" data-fallback="./new4.png" alt="A claymation version of Q in his chef's whites, flipping a pancake in a little clay kitchen" loading="lazy" width="1200" height="1490">
               </span>
               <span class="work-card__cap">Claymation chef · Animated ad</span>
             </button>
@@ -742,7 +750,7 @@
       <div class="wrap">
         <div class="how">
           <div class="how__photo frame reveal">
-            <img src="images/process-banh-mi.jpg" alt="Gloved hands pulling apart a freshly made banh mi in a commercial kitchen, crumbs flying" loading="lazy" width="1200" height="1490">
+            <img src="images/process-banh-mi.jpg" data-fallback="./new%201.png" alt="Gloved hands pulling apart a freshly made banh mi in a commercial kitchen, crumbs flying" loading="lazy" width="1200" height="1490">
           </div>
           <div>
             <div class="how__intro reveal">
@@ -1135,6 +1143,15 @@
 
       /* --- Missing images: hide the whole spot (card or frame) so nothing looks empty --- */
       function markMissing(img) {
+        // Backup copy (e.g. a photo uploaded to the top of the repo under another name)?
+        // Try that before giving up. Delete the data-fallback attributes once every
+        // photo is in images/ with its proper name.
+        var backup = img.getAttribute('data-fallback');
+        if (backup && !img.hasAttribute('data-tried-fallback')) {
+          img.setAttribute('data-tried-fallback', '');
+          img.src = backup;
+          return;
+        }
         var frame = img.closest('.frame');
         var spot = img.closest('.work-grid > li, .prompt-grid > li, .strip > li');
         if (spot) spot.classList.add('is-missing-spot');
@@ -1224,7 +1241,7 @@
           el.setAttribute('aria-label', label);
         } else {
           el = document.createElement('img');
-          el.src = src; el.alt = label;
+          el.src = (thumb && thumb.tagName === 'IMG' && thumb.currentSrc) || src; el.alt = label;
         }
         media.appendChild(el);
         caption.textContent = text;
