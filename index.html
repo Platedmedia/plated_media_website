@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- Plated Media Co website - VERSION 12 (25 Nov 2026). Only uses photos that exist in images/. -->
 <html lang="en-AU">
 <head>
   <meta charset="utf-8">
@@ -125,19 +126,12 @@
     .btn:active { transform: translateY(0); }
     .btn svg { width: 1em; height: 1em; }
 
-    /* ---------- Missing-image fallback (shows until you upload the file) ---------- */
+    /* ---------- Photo frames ----------
+       Safety net: if a photo file ever goes missing, its whole spot is hidden
+       (no empty box, no placeholder). */
     .frame { display: block; position: relative; background: var(--cream-2); overflow: hidden; }
     .section--dark .frame { background: #2a2826; }
-    .frame.is-missing img { opacity: 0; }
-    .frame.is-missing::after {
-      content: "Photo coming soon";
-      position: absolute; inset: 0;
-      display: grid; place-items: center; text-align: center; padding: 12px;
-      font: 700 .85rem/1.2 var(--body); letter-spacing: .1em; text-transform: uppercase;
-      color: var(--muted);
-      background: repeating-linear-gradient(-45deg, transparent 0 12px, rgba(28,27,26,.05) 12px 24px);
-    }
-    .section--dark .frame.is-missing::after { color: #a59d92; }
+    .frame.is-missing, .is-missing-spot { display: none !important; }
 
     /* ---------- 1. Nav ---------- */
     .nav {
@@ -166,7 +160,6 @@
     }
     .hero__bg { position: absolute; inset: 0; z-index: -2; background: #2a2826; }
     .hero__bg img { width: 100%; height: 100%; object-fit: cover; object-position: 55% 30%; }
-    .hero__bg.is-missing::after { display: none; }
     .hero::after {
       content: ""; position: absolute; inset: 0; z-index: -1;
       background:
@@ -189,9 +182,28 @@
     .hero__sub { font-size: clamp(1.15rem, 2.6vw, 1.45rem); max-width: 26em; margin: 22px 0 30px; color: #f1e7d8; font-weight: 500; }
     .hero__meta { margin-top: 22px; font-size: .9rem; color: #d9cfc0; font-weight: 500; }
 
+    /* ---------- 2b. Motion ad video ---------- */
+    .reel { background: var(--cream-2); }
+    .reel__inner { display: grid; gap: clamp(28px, 5vw, 64px); align-items: center; }
+    @media (min-width: 860px) { .reel__inner { grid-template-columns: 1fr 1fr; } }
+    .reel__video {
+      width: 100%; max-width: 560px; margin-inline: auto;
+      background: #fff; padding: 8px; border-radius: 18px; box-shadow: var(--shadow-lg);
+    }
+    .reel__video video { width: 100%; height: auto; aspect-ratio: 1 / 1; border-radius: 12px; background: var(--cream); object-fit: cover; }
+    .reel__copy .lede { margin: 20px 0 0; }
+    .reel__points { list-style: none; padding: 0; margin: 22px 0 28px; display: grid; gap: 10px; color: var(--ink-2); }
+    .reel__points li { padding-left: 28px; position: relative; }
+    .reel__points li::before {
+      content: ""; position: absolute; left: 0; top: .35em; width: 16px; height: 16px; border-radius: 50%;
+      background: var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M6 4.5l5 3.5-5 3.5z' fill='white'/%3E%3C/svg%3E") center/100% no-repeat;
+    }
+
     /* ---------- 3. The work ---------- */
     .work-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(12px, 2.5vw, 28px); }
-    @media (min-width: 820px) { .work-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 820px) {
+      .work-grid { grid-template-columns: repeat(3, 1fr); }
+    }
     .work-card {
       all: unset; box-sizing: border-box;
       display: block; width: 100%;
@@ -244,7 +256,7 @@
     @media (min-width: 900px) { .about { grid-template-columns: 5fr 6fr; } }
     .about__photos { position: relative; max-width: 520px; width: 100%; margin-inline: auto; }
     .about__portrait { border-radius: var(--radius); box-shadow: var(--shadow-lg); aspect-ratio: 4 / 5; transform: rotate(-1deg); }
-    .about__portrait img { width: 100%; height: 100%; object-fit: cover; }
+    .about__portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
     .about__bio p { font-size: 1.12rem; color: var(--ink-2); }
     .about__bio .sign { font-family: var(--display); font-size: 2rem; text-transform: uppercase; color: var(--red); margin-top: 8px; }
 
@@ -280,10 +292,12 @@
     .suburbs li { border: 1.5px solid rgba(244,236,223,.4); padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: .9rem; }
 
     /* ---------- 6. How it works ---------- */
-    .how { display: grid; gap: clamp(36px, 6vw, 72px); align-items: center; }
+    .how { display: grid; gap: clamp(32px, 6vw, 72px); align-items: center; }
     @media (min-width: 900px) { .how { grid-template-columns: 1fr 1fr; } }
-    .how__photo { border-radius: var(--radius); box-shadow: var(--shadow-lg); aspect-ratio: 4 / 3; transform: rotate(-1.2deg); }
-    .how__photo img { width: 100%; height: 100%; object-fit: cover; }
+    .how__intro { margin-bottom: 28px; }
+    .how__intro .lede { margin: 18px 0 0; }
+    .how__photo { border-radius: var(--radius); box-shadow: var(--shadow-lg); aspect-ratio: 4 / 5; transform: rotate(-1.2deg); }
+    .how__photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; }
     .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
     .step {
       display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center;
@@ -293,7 +307,7 @@
     .step__num { font-family: var(--display); font-size: 3rem; line-height: 1; color: var(--red); }
     .step h3 { font-size: clamp(1.35rem, 3.4vw, 1.65rem); }
     .step p { margin: 4px 0 0; color: var(--muted); font-size: .98rem; }
-    .how .btn { margin-top: 28px; }
+    .how .btn { margin-top: 30px; }
 
     /* ---------- 7. Packages ---------- */
     .packages { display: grid; gap: 22px; align-items: center; }
@@ -423,7 +437,21 @@
     .upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     .upload__text { font-weight: 700; pointer-events: none; }
     .upload__text span { display: block; font-weight: 500; color: var(--muted); font-size: .88rem; margin-top: 4px; }
-    .upload__files { font-size: .9rem; color: var(--ink-2); margin-top: 8px; font-weight: 600; }
+    .upload__title { display: block; font-weight: 700; color: var(--ink); font-size: 1rem; margin: 0; }
+    .upload.is-full { opacity: .55; }
+    .upload.is-full input { cursor: not-allowed; }
+    .upload__files { font-size: .9rem; color: var(--ink-2); margin: 10px 0 0; font-weight: 600; }
+    .upload__files:empty { display: none; }
+    .thumbs { list-style: none; padding: 0; margin: 12px 0 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .thumbs:empty { display: none; }
+    .thumbs li { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: var(--cream-2); box-shadow: var(--shadow); }
+    .thumbs img { width: 100%; height: 100%; object-fit: cover; }
+    .thumbs button {
+      position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border-radius: 50%;
+      border: 0; background: rgba(28,27,26,.85); color: #fff; font-size: 1rem; line-height: 1; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .thumbs button::after { content: ""; position: absolute; inset: -8px; } /* bigger tap area */
     .form .btn { width: 100%; min-height: 60px; font-size: 1.5rem; font-family: var(--display); font-weight: 400; letter-spacing: .04em; text-transform: uppercase; }
     .form__fine { font-size: .85rem; color: var(--muted); margin: 0; text-align: center; }
     .form__fine a { color: var(--ink); }
@@ -444,7 +472,6 @@
     .site-footer a:hover { color: #fff; }
     .footer-tag { font-family: var(--display); text-transform: uppercase; font-size: 1.6rem; color: var(--cream); margin: 16px 0 6px; line-height: 1; }
     .footer-base { margin-top: 44px; padding-top: 20px; border-top: 1px solid rgba(244,236,223,.15); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; font-size: .88rem; color: #a59d92; }
-    .placeholder-note { font-size: .8rem; color: #a59d92; font-style: italic; }
 
     /* ---------- Ken Burns: slow cinematic pan + zoom on photos ----------
        Each photo drifts and zooms very gently (22s, back and forth).
@@ -544,6 +571,29 @@
       </div>
     </section>
 
+    <!-- ===================== 2b. MOTION AD VIDEO =====================
+         Plays on its own, muted, on a loop. To swap the video: upload a new .mp4 to
+         images/ and change the src below (and the poster image, a still from the video). -->
+    <section class="section reel" id="reel" aria-labelledby="reel-title">
+      <div class="wrap reel__inner">
+        <div class="reel__video reveal">
+          <video id="motion-ad" src="images/motion-ad.mp4" poster="images/motion-ad-poster.jpg"
+                 autoplay muted loop playsinline preload="auto" width="960" height="960"
+                 aria-label="Plated Media Co motion ad: a chef's knife, monthly and one-off ad options, then the Plated Media Co logo and tagline, Ads made by a chef"></video>
+        </div>
+        <div class="reel__copy reveal">
+          <p class="kicker">Watch</p>
+          <h2 id="reel-title">Fifteen seconds. <span class="red">Made by a chef.</span></h2>
+          <p class="lede">This is a Plated Media Co motion ad: short, clean and built to stop the scroll. Yours would star your food.</p>
+          <ul class="reel__points">
+            <li><strong>Monthly subscriptions</strong> for fresh ads all year</li>
+            <li><strong>One-off ads</strong> whenever you need one</li>
+          </ul>
+          <a class="btn" href="#free-ad">Get your free ad</a>
+        </div>
+      </div>
+    </section>
+
     <!-- ===================== 3. THE WORK ===================== -->
     <section class="section" id="work" aria-labelledby="work-title">
       <div class="wrap">
@@ -587,27 +637,27 @@
             </button>
           </li>
           <li>
-            <button class="work-card" type="button" data-src="images/work-rotisserie-logo.jpg" data-caption="Rotisserie chicken · Sunshine">
+            <button class="work-card" type="button" data-src="images/work-burger-diner.jpg" data-caption="Diner burger · Poster ad">
               <span class="frame"><span class="tag">Concept</span>
-                <img src="images/work-rotisserie-logo.jpg" alt="Golden rotisserie chickens turning on the spit, with a shop logo overlay" loading="lazy">
+                <img src="images/work-burger-diner.jpg" alt="A retro diner menu poster ad for Plated Media Co with a cheeseburger, crinkle-cut fries and a pickle" loading="lazy" width="906" height="1125">
               </span>
-              <span class="work-card__cap">Rotisserie chicken · Sunshine</span>
+              <span class="work-card__cap">Diner burger · Poster ad</span>
             </button>
           </li>
           <li>
-            <button class="work-card" type="button" data-src="images/work-picnic-westgate.jpg" data-caption="Picnic spread · West Gate">
+            <button class="work-card" type="button" data-src="images/work-donut-logo.jpg" data-caption="Chocolate donut · Logo ad">
               <span class="frame"><span class="tag">Concept</span>
-                <img src="images/work-picnic-westgate.jpg" alt="A picnic spread on the grass with the West Gate Bridge in the background" loading="lazy">
+                <img src="images/work-donut-logo.jpg" alt="The Plated Media Co logo pressed into the glossy chocolate glaze of a donut, floating on a pastel background" loading="lazy" width="1200" height="1490">
               </span>
-              <span class="work-card__cap">Picnic spread · West Gate</span>
+              <span class="work-card__cap">Chocolate donut · Logo ad</span>
             </button>
           </li>
           <li>
-            <button class="work-card" type="button" data-src="images/work-pasta-curry.jpg" data-caption="Pasta &amp; curry · Maidstone">
+            <button class="work-card" type="button" data-src="images/work-claymation-chef.jpg" data-caption="Claymation chef · Animated ad">
               <span class="frame"><span class="tag">Concept</span>
-                <img src="images/work-pasta-curry.jpg" alt="A bowl of pasta beside a rich curry, plated and ready to serve" loading="lazy">
+                <img src="images/work-claymation-chef.jpg" alt="A claymation version of Q in his chef's whites, flipping a pancake in a little clay kitchen" loading="lazy" width="1200" height="1490">
               </span>
-              <span class="work-card__cap">Pasta &amp; curry · Maidstone</span>
+              <span class="work-card__cap">Claymation chef · Animated ad</span>
             </button>
           </li>
         </ul>
@@ -628,7 +678,7 @@
         <div class="about">
           <div class="about__photos reveal">
             <div class="about__portrait frame">
-              <img src="images/q-portrait.jpg" alt="Q, smiling and leaning on a stainless-steel kitchen bench in his chef's whites" loading="lazy" width="1040" height="1300">
+              <img src="images/hero-chef-plating.jpg" alt="Q in his chef's whites, smiling as he places microgreens on a salmon dish with tweezers" loading="lazy" width="1500" height="1500">
             </div>
           </div>
 
@@ -692,12 +742,13 @@
       <div class="wrap">
         <div class="how">
           <div class="how__photo frame reveal">
-            <img src="images/process-filming.jpg" alt="Behind the scenes: plating tacos and tuna pasta while a camera on a tripod films the dishes" loading="lazy" width="1600" height="1200">
+            <img src="images/process-banh-mi.jpg" alt="Gloved hands pulling apart a freshly made banh mi in a commercial kitchen, crumbs flying" loading="lazy" width="1200" height="1490">
           </div>
           <div>
-            <div class="section-head reveal" style="margin-bottom:28px">
+            <div class="how__intro reveal">
               <p class="kicker">How it works</p>
               <h2 id="how-title">Three steps. <span class="red">No pressure.</span></h2>
+              <p class="lede">You send the photos, I do the rest. Your free sample ad is yours to keep, whether you sign up or not.</p>
             </div>
             <ol class="steps reveal-group">
               <li class="step">
@@ -935,8 +986,11 @@
       </div>
     </section>
 
-    <!-- ===================== 10. REVIEWS ===================== -->
-    <section class="section" id="reviews" aria-labelledby="reviews-title">
+    <!-- ===================== 10. REVIEWS (hidden for now) =====================
+         This section is switched off until you have real reviews. To show it:
+         put real reviews in the two cards below, then delete the word  hidden
+         from the <section ...> line just under this comment. -->
+    <section class="section" id="reviews" aria-labelledby="reviews-title" hidden>
       <div class="wrap">
         <div class="section-head reveal">
           <p class="kicker">Reviews</p>
@@ -977,20 +1031,24 @@
         </div>
 
         <!--
-          FORMSPREE SETUP (free plan available):
-          1. Go to https://formspree.io and sign up with hello@platedmediaco.com.au.
-          2. Click "+ New form", name it "Free sample ad".
-          3. Formspree shows an endpoint like https://formspree.io/f/abcdwxyz.
-             Copy the last part (abcdwxyz) and paste it over YOUR_FORM_ID below.
-          4. Submit the form once yourself and confirm the email Formspree sends you.
-          Note: Formspree only accepts file uploads on its paid plans. On the free plan the
-          text fields still arrive, and you can ask people to email/DM their photos instead.
+          WHERE THIS FORM SENDS: FormSubmit (formsubmit.co), free, no account needed.
+          Every request is emailed to platedmediaco@gmail.com with the photos attached.
+          One-time setup:
+          1. Upload this file to GitHub, open your live site and send yourself a test request.
+          2. FormSubmit emails platedmediaco@gmail.com: "Action required: activate form".
+             Click "Activate Form". Check Spam/Promotions if you can't see it.
+          3. Optional, recommended: the activation page gives you a random code, for example
+             https://formsubmit.co/a1b2c3d4e5f6... Paste that code over the email address in
+             action="..." below so spammers can't read your address from the page.
+          If you move to your own domain, change the _next address to match.
         -->
-        <form class="form reveal" id="sample-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" enctype="multipart/form-data">
+        <form class="form reveal" id="sample-form" action="https://formsubmit.co/platedmediaco@gmail.com" method="POST" enctype="multipart/form-data">
           <input type="hidden" name="_subject" value="New free sample ad request">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_next" value="https://tawhz1.github.io/plated_media_website/?sent=1#free-ad">
           <div class="hp" aria-hidden="true">
-            <label for="f-gotcha">Leave this empty</label>
-            <input type="text" id="f-gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
+            <label for="f-honey">Leave this empty</label>
+            <input type="text" id="f-honey" name="_honey" tabindex="-1" autocomplete="off">
           </div>
 
           <div class="field">
@@ -1018,9 +1076,10 @@
             <label for="f-photos">Photos of your food <span style="font-weight:500;color:var(--muted)">(up to 5)</span></label>
             <div class="upload">
               <input type="file" id="f-photos" name="photos" accept="image/*" multiple aria-describedby="f-photos-hint">
-              <p class="upload__text" style="margin:0">Tap to choose photos<span id="f-photos-hint">or drag them here. Phone photos are perfect.</span></p>
-              <p class="upload__files" id="f-photos-list" aria-live="polite" style="margin-bottom:0"></p>
+              <p class="upload__text" style="margin:0"><span class="upload__title" id="f-photos-title">Tap to add up to 5 photos</span><span id="f-photos-hint">Select several at once, or add more later. Phone photos are perfect, I'll shrink them for sending.</span></p>
             </div>
+            <ul class="thumbs" id="f-photos-thumbs" aria-label="Photos added"></ul>
+            <p class="upload__files" id="f-photos-list" aria-live="polite"></p>
           </div>
           <div class="field--full" style="display:grid;gap:12px">
             <button class="btn" type="submit">Send</button>
@@ -1046,9 +1105,10 @@
         <div>
           <h2>Get in touch</h2>
           <ul>
-            <li><a href="mailto:hello@platedmediaco.com.au">hello@platedmediaco.com.au</a></li>
-            <!-- PLACEHOLDER: replace the number below (in both the href and the text) with your real phone number, then delete this comment and the "(placeholder)" note. -->
-            <li><a href="tel:+61400000000">04XX XXX XXX</a> <span class="placeholder-note">(placeholder)</span></li>
+            <li><a href="mailto:platedmediaco@gmail.com">platedmediaco@gmail.com</a></li>
+            <!-- PHONE (hidden for now). To show your number, replace this whole comment with:
+                 <li><a href="tel:+614XXXXXXXX">04XX XXX XXX</a></li>
+                 using your real number in both places (the tel: part has no spaces and starts +61, dropping the first 0). -->
             <!-- CHECK: make sure this is your real Instagram handle. -->
             <li><a href="https://www.instagram.com/platedmediaco/" rel="noopener" target="_blank">Instagram @platedmediaco<span class="sr-only"> (opens in a new tab)</span></a></li>
           </ul>
@@ -1073,9 +1133,11 @@
 
       document.getElementById('year').textContent = new Date().getFullYear();
 
-      /* --- Missing images: show a tidy "Photo coming soon" panel instead of a broken icon --- */
+      /* --- Missing images: hide the whole spot (card or frame) so nothing looks empty --- */
       function markMissing(img) {
         var frame = img.closest('.frame');
+        var spot = img.closest('.work-grid > li, .prompt-grid > li, .strip > li');
+        if (spot) spot.classList.add('is-missing-spot');
         if (frame) frame.classList.add('is-missing');
         if (window.console) console.warn('Image not found: ' + img.getAttribute('src'));
       }
@@ -1108,6 +1170,23 @@
           f.setAttribute('data-kb', String(i % 4));
           kb.observe(f);
         });
+      }
+
+      /* --- Motion ad video: plays muted on a loop while on screen --- */
+      var ad = document.getElementById('motion-ad');
+      if (ad) {
+        ad.muted = true;
+        var tryPlay = function () {
+          var pr = ad.play();
+          if (pr && pr.catch) pr.catch(function () { ad.controls = true; }); // e.g. phone in low-power mode
+        };
+        if (reduceMotion) {
+          ad.removeAttribute('autoplay'); ad.pause(); ad.controls = true;
+        } else if ('IntersectionObserver' in window) {
+          new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) { if (e.isIntersecting) tryPlay(); else ad.pause(); });
+          }, { threshold: 0.25 }).observe(ad);
+        }
       }
 
       /* --- Copy buttons on motion prompts --- */
@@ -1172,47 +1251,127 @@
         });
       });
 
-      /* --- Photo upload: show chosen file names, cap at 5 --- */
+      /* --- Photo upload (up to 5) ---
+         People can pick several photos at once, or add more in later picks, up to 5.
+         Phone photos are often 3-8 MB each and FormSubmit emails attachments with a total
+         limit of about 10 MB, so each photo is shrunk in the browser to a 1600px JPEG
+         (roughly 300-600 KB) and attached as photo-1 ... photo-5. Older browsers that
+         can't do this send the photos from their last pick, unshrunk. */
+      var MAX_PHOTOS = 5, MAX_SIDE = 1600, MAX_TOTAL = 9.5 * 1024 * 1024;
+      var form = document.getElementById('sample-form');
+      var status = document.getElementById('form-status');
+      var btn = form.querySelector('button[type="submit"]');
       var fileInput = document.getElementById('f-photos');
       var fileList = document.getElementById('f-photos-list');
+      var thumbs = document.getElementById('f-photos-thumbs');
+      var title = document.getElementById('f-photos-title');
       var upload = fileInput.closest('.upload');
+      var canCollect = typeof DataTransfer === 'function' && !!window.Promise && !!window.URL;
+      if (canCollect) { try { new DataTransfer().items.add(new File([''], 'x.txt')); } catch (err) { canCollect = false; } }
+      var photos = [];      // shrunk File objects, in order
+      var preparing = 0;
+
+      function shrink(file) {
+        return new Promise(function (resolve) {
+          if (!/^image\//.test(file.type) || /gif|svg/.test(file.type)) return resolve(file);
+          var url = URL.createObjectURL(file), img = new Image();
+          img.onload = function () {
+            var scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+            var c = document.createElement('canvas');
+            c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+            URL.revokeObjectURL(url);
+            c.toBlob(function (blob) {
+              if (!blob || blob.size >= file.size) return resolve(file);
+              resolve(new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }));
+            }, 'image/jpeg', 0.82);
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); resolve(file); }; // e.g. HEIC on some browsers
+          img.src = url;
+        });
+      }
+      function mb(n) { return (n / 1024 / 1024).toFixed(1) + ' MB'; }
+      function totalSize() {
+        var n = 0;
+        form.querySelectorAll('input[type="file"]').forEach(function (el) {
+          if (el.name) Array.prototype.forEach.call(el.files, function (f) { n += f.size; });
+        });
+        return n;
+      }
+      function render(note) {
+        // hidden inputs that actually get sent
+        form.querySelectorAll('input[data-prepared]').forEach(function (el) { el.remove(); });
+        photos.forEach(function (f, i) {
+          var dt = new DataTransfer(); dt.items.add(f);
+          var el = document.createElement('input');
+          el.type = 'file'; el.name = 'photo-' + (i + 1); el.hidden = true; el.setAttribute('data-prepared', '');
+          el.files = dt.files;
+          form.appendChild(el);
+        });
+        // thumbnails
+        thumbs.querySelectorAll('img').forEach(function (im) { URL.revokeObjectURL(im.src); });
+        thumbs.innerHTML = '';
+        photos.forEach(function (f, i) {
+          var li = document.createElement('li');
+          var im = document.createElement('img'); im.src = URL.createObjectURL(f); im.alt = 'Photo ' + (i + 1) + ': ' + f.name;
+          var rm = document.createElement('button'); rm.type = 'button'; rm.innerHTML = '&times;';
+          rm.setAttribute('aria-label', 'Remove photo ' + (i + 1));
+          rm.addEventListener('click', function () { photos.splice(i, 1); render(); fileInput.focus(); });
+          li.appendChild(im); li.appendChild(rm); thumbs.appendChild(li);
+        });
+        var full = photos.length >= MAX_PHOTOS;
+        fileInput.disabled = full; upload.classList.toggle('is-full', full);
+        title.textContent = full ? '5 photos added' : photos.length ? 'Tap to add more photos (' + (MAX_PHOTOS - photos.length) + ' left)' : 'Tap to add up to 5 photos';
+        fileList.textContent = photos.length
+          ? photos.length + ' of ' + MAX_PHOTOS + ' photos added \u00b7 ' + mb(totalSize()) + (note ? ' \u00b7 ' + note : '')
+          : (note || '');
+      }
+
       fileInput.addEventListener('change', function () {
-        var files = Array.prototype.slice.call(fileInput.files);
-        if (!files.length) { fileList.textContent = ''; return; }
-        var names = files.map(function (f) { return f.name; }).join(', ');
-        fileList.textContent = files.length + (files.length === 1 ? ' photo: ' : ' photos: ') + names +
-          (files.length > 5 ? ' (5 is plenty, but I’ll take a look at them all)' : '');
+        status.textContent = ''; status.className = 'form__status';
+        var picked = Array.prototype.slice.call(fileInput.files);
+        if (!picked.length) return;
+        if (!canCollect) { // fallback: send this pick as-is
+          fileList.textContent = picked.length + (picked.length === 1 ? ' photo' : ' photos') + ' selected';
+          return;
+        }
+        fileInput.name = ''; // only the prepared copies are sent
+        var room = MAX_PHOTOS - photos.length;
+        var extra = picked.length - room;
+        var note = extra > 0 ? '5 is the limit, so ' + extra + (extra === 1 ? ' photo wasn\u2019t' : ' photos weren\u2019t') + ' added' : '';
+        picked = picked.slice(0, room);
+        fileInput.value = ''; // lets people pick again (even the same photo)
+        preparing++; btn.disabled = true;
+        fileList.textContent = 'Getting ' + picked.length + (picked.length === 1 ? ' photo' : ' photos') + ' ready\u2026';
+        Promise.all(picked.map(shrink)).then(function (ready) {
+          photos = photos.concat(ready).slice(0, MAX_PHOTOS);
+          render(note);
+        }).catch(function () { render('one photo couldn\u2019t be added, please try another'); })
+          .then(function () { preparing--; if (!preparing) btn.disabled = false; });
       });
       ['dragenter', 'dragover'].forEach(function (t) { upload.addEventListener(t, function () { upload.classList.add('is-drag'); }); });
       ['dragleave', 'drop'].forEach(function (t) { upload.addEventListener(t, function () { upload.classList.remove('is-drag'); }); });
 
-      /* --- Form: send in the background so people stay on the page --- */
-      var form = document.getElementById('sample-form');
-      var status = document.getElementById('form-status');
+      /* --- Form: normal post to FormSubmit, which then sends people back here --- */
       form.addEventListener('submit', function (e) {
-        if (!window.fetch || !window.FormData) return; // old browser: normal submit
-        e.preventDefault();
-        if (form.action.indexOf('YOUR_FORM_ID') !== -1) {
+        if (preparing) { e.preventDefault(); return; }
+        if (totalSize() > MAX_TOTAL) {
+          e.preventDefault();
           status.className = 'form__status is-err';
-          status.textContent = 'This form isn’t connected yet. Please email hello@platedmediaco.com.au instead.';
+          status.textContent = 'Those photos are a bit big to email (' + mb(totalSize()) + '). Please choose fewer photos and try again.';
           return;
         }
-        var btn = form.querySelector('button[type="submit"]');
-        btn.disabled = true; btn.textContent = 'Sending…';
-        status.className = 'form__status'; status.textContent = '';
-        fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } })
-          .then(function (r) {
-            if (!r.ok) throw new Error('Request failed');
-            form.reset(); fileList.textContent = '';
-            status.className = 'form__status is-ok';
-            status.textContent = 'Got it, thanks! I’ll be in touch soon. — Q';
-          })
-          .catch(function () {
-            status.className = 'form__status is-err';
-            status.textContent = 'Sorry, that didn’t send. Please try again, or email hello@platedmediaco.com.au.';
-          })
-          .then(function () { btn.disabled = false; btn.textContent = 'Send'; });
+        btn.disabled = true; btn.textContent = 'Sending\u2026';
       });
+      // Page reloaded from the back button after sending: re-enable the button.
+      window.addEventListener('pageshow', function () { btn.disabled = false; btn.textContent = 'Send'; });
+
+      // Back from FormSubmit: show a thank-you message.
+      if (/[?&]sent=1/.test(location.search)) {
+        status.className = 'form__status is-ok';
+        status.textContent = 'Got it, thanks! Your photos are on their way to me. I\u2019ll be in touch soon. \u2014 Q';
+        if (history.replaceState) history.replaceState(null, '', location.pathname + '#free-ad');
+      }
     })();
   </script>
 </body>
