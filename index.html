@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Plated Media Co website - VERSION 14 (25 Nov 2026). Only uses photos that exist in images/. -->
+<!-- Plated Media Co website - VERSION 15 (25 Nov 2026). Only uses photos that exist in images/. -->
 <html lang="en-AU">
 <head>
   <meta charset="utf-8">
@@ -190,6 +190,27 @@
       width: 100%; max-width: 560px; margin-inline: auto;
       background: #fff; padding: 8px; border-radius: 18px; box-shadow: var(--shadow-lg);
     }
+    .reel__video { position: relative; }
+    .sound-btn {
+      position: absolute; right: 20px; bottom: 20px; z-index: 2;
+      display: inline-flex; align-items: center; gap: 8px;
+      min-height: 44px; padding: 10px 16px 10px 13px;   /* 44px+ tap target for phones */
+      border: 0; border-radius: 999px; cursor: pointer;
+      background: rgba(28,27,26,.78); color: #fff;
+      -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+      font: 700 .88rem/1 var(--body); letter-spacing: .01em;
+      box-shadow: 0 6px 18px -6px rgba(0,0,0,.45);
+      transition: background-color .2s ease, transform .2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sound-btn:hover { background: rgba(28,27,26,.92); transform: translateY(-1px); }
+    .sound-btn:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+    .sound-btn svg { width: 20px; height: 20px; flex: none; }
+    .sound-btn__on { display: none; }
+    .sound-btn[aria-pressed="true"] { background: var(--red); }
+    .sound-btn[aria-pressed="true"] .sound-btn__on { display: block; }
+    .sound-btn[aria-pressed="true"] .sound-btn__off { display: none; }
+    @media (max-width: 480px) { .sound-btn { right: 16px; bottom: 16px; } }
     .reel__video video { width: 100%; height: auto; aspect-ratio: 1 / 1; border-radius: 12px; background: var(--cream); object-fit: cover; }
     .reel__copy .lede { margin: 20px 0 0; }
     .reel__points { list-style: none; padding: 0; margin: 22px 0 28px; display: grid; gap: 10px; color: var(--ink-2); }
@@ -588,6 +609,11 @@
             <source src="images/motion-ad.mp4" type="video/mp4">
             <source src="./motion%3Aad.mp4" type="video/mp4">
           </video>
+          <button class="sound-btn" id="sound-btn" type="button" aria-pressed="false" aria-controls="motion-ad">
+            <svg class="sound-btn__off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="m22 9-6 6M16 9l6 6"/></svg>
+            <svg class="sound-btn__on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+            <span class="sound-btn__label">Sound on</span>
+          </button>
         </div>
         <div class="reel__copy reveal">
           <p class="kicker">Watch</p>
@@ -1195,7 +1221,10 @@
         ad.muted = true;
         var tryPlay = function () {
           var pr = ad.play();
-          if (pr && pr.catch) pr.catch(function () { ad.controls = true; }); // e.g. phone in low-power mode
+          if (pr && pr.catch) pr.catch(function () {
+            if (!ad.muted) { ad.muted = true; ad.play().catch(function () { ad.controls = true; }); }
+            else ad.controls = true; // e.g. phone in low-power mode
+          });
         };
         if (reduceMotion) {
           ad.removeAttribute('autoplay'); ad.pause(); ad.controls = true;
@@ -1204,6 +1233,35 @@
             entries.forEach(function (e) { if (e.isIntersecting) tryPlay(); else ad.pause(); });
           }, { threshold: 0.25 }).observe(ad);
         }
+      }
+
+      /* --- Sound on / off button for the motion ad ---
+         The video always starts muted (browsers only allow autoplay when muted).
+         Tapping the button turns sound on and restarts the ad from the top the first
+         time, so people hear it all. Tap again to mute. */
+      var soundBtn = document.getElementById('sound-btn');
+      if (ad && soundBtn) {
+        var soundLabel = soundBtn.querySelector('.sound-btn__label');
+        var heardOnce = false;
+        var showState = function () {
+          var on = !ad.muted;
+          soundBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          soundLabel.textContent = on ? 'Sound off' : 'Sound on';
+          soundBtn.setAttribute('aria-label', on ? 'Mute the video' : 'Turn the video sound on');
+        };
+        soundBtn.addEventListener('click', function () {
+          if (ad.muted) {
+            ad.muted = false;
+            if (!heardOnce) { heardOnce = true; try { ad.currentTime = 0; } catch (err) {} }
+            var pr = ad.play();
+            if (pr && pr.catch) pr.catch(function () { ad.muted = true; showState(); });
+          } else {
+            ad.muted = true;
+          }
+          showState();
+        });
+        ad.addEventListener('volumechange', showState); // keeps the button right if the player's own controls are used
+        showState();
       }
 
       /* --- Copy buttons on motion prompts --- */
