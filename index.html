@@ -423,7 +423,21 @@
     .upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     .upload__text { font-weight: 700; pointer-events: none; }
     .upload__text span { display: block; font-weight: 500; color: var(--muted); font-size: .88rem; margin-top: 4px; }
-    .upload__files { font-size: .9rem; color: var(--ink-2); margin-top: 8px; font-weight: 600; }
+    .upload__title { display: block; font-weight: 700; color: var(--ink); font-size: 1rem; margin: 0; }
+    .upload.is-full { opacity: .55; }
+    .upload.is-full input { cursor: not-allowed; }
+    .upload__files { font-size: .9rem; color: var(--ink-2); margin: 10px 0 0; font-weight: 600; }
+    .upload__files:empty { display: none; }
+    .thumbs { list-style: none; padding: 0; margin: 12px 0 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .thumbs:empty { display: none; }
+    .thumbs li { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: var(--cream-2); box-shadow: var(--shadow); }
+    .thumbs img { width: 100%; height: 100%; object-fit: cover; }
+    .thumbs button {
+      position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border-radius: 50%;
+      border: 0; background: rgba(28,27,26,.85); color: #fff; font-size: 1rem; line-height: 1; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .thumbs button::after { content: ""; position: absolute; inset: -8px; } /* bigger tap area */
     .form .btn { width: 100%; min-height: 60px; font-size: 1.5rem; font-family: var(--display); font-weight: 400; letter-spacing: .04em; text-transform: uppercase; }
     .form__fine { font-size: .85rem; color: var(--muted); margin: 0; text-align: center; }
     .form__fine a { color: var(--ink); }
@@ -1022,9 +1036,10 @@
             <label for="f-photos">Photos of your food <span style="font-weight:500;color:var(--muted)">(up to 5)</span></label>
             <div class="upload">
               <input type="file" id="f-photos" name="photos" accept="image/*" multiple aria-describedby="f-photos-hint">
-              <p class="upload__text" style="margin:0">Tap to choose photos<span id="f-photos-hint">or drag them here. Phone photos are perfect, I'll shrink them for sending.</span></p>
-              <p class="upload__files" id="f-photos-list" aria-live="polite" style="margin-bottom:0"></p>
+              <p class="upload__text" style="margin:0"><span class="upload__title" id="f-photos-title">Tap to add up to 5 photos</span><span id="f-photos-hint">Select several at once, or add more later. Phone photos are perfect, I'll shrink them for sending.</span></p>
             </div>
+            <ul class="thumbs" id="f-photos-thumbs" aria-label="Photos added"></ul>
+            <p class="upload__files" id="f-photos-list" aria-live="polite"></p>
           </div>
           <div class="field--full" style="display:grid;gap:12px">
             <button class="btn" type="submit">Send</button>
@@ -1176,19 +1191,25 @@
         });
       });
 
-      /* --- Photo upload ---
-         Phone photos are often 3-8 MB each, and FormSubmit emails attachments with a
-         total limit of about 10 MB. So each photo (up to 5) is shrunk in the browser to
-         a 1600px JPEG, roughly 300-600 KB, and attached as photo-1, photo-2 ... If a
-         browser can't do that, the original files are sent instead. */
+      /* --- Photo upload (up to 5) ---
+         People can pick several photos at once, or add more in later picks, up to 5.
+         Phone photos are often 3-8 MB each and FormSubmit emails attachments with a total
+         limit of about 10 MB, so each photo is shrunk in the browser to a 1600px JPEG
+         (roughly 300-600 KB) and attached as photo-1 ... photo-5. Older browsers that
+         can't do this send the photos from their last pick, unshrunk. */
       var MAX_PHOTOS = 5, MAX_SIDE = 1600, MAX_TOTAL = 9.5 * 1024 * 1024;
       var form = document.getElementById('sample-form');
       var status = document.getElementById('form-status');
       var btn = form.querySelector('button[type="submit"]');
       var fileInput = document.getElementById('f-photos');
       var fileList = document.getElementById('f-photos-list');
+      var thumbs = document.getElementById('f-photos-thumbs');
+      var title = document.getElementById('f-photos-title');
       var upload = fileInput.closest('.upload');
-      var preparing = null;
+      var canCollect = typeof DataTransfer === 'function' && !!window.Promise && !!window.URL;
+      if (canCollect) { try { new DataTransfer().items.add(new File([''], 'x.txt')); } catch (err) { canCollect = false; } }
+      var photos = [];      // shrunk File objects, in order
+      var preparing = 0;
 
       function shrink(file) {
         return new Promise(function (resolve) {
@@ -1209,10 +1230,7 @@
           img.src = url;
         });
       }
-      function clearPrepared() {
-        form.querySelectorAll('input[data-prepared]').forEach(function (el) { el.remove(); });
-        fileInput.name = 'photos';
-      }
+      function mb(n) { return (n / 1024 / 1024).toFixed(1) + ' MB'; }
       function totalSize() {
         var n = 0;
         form.querySelectorAll('input[type="file"]').forEach(function (el) {
@@ -1220,34 +1238,56 @@
         });
         return n;
       }
-      function mb(n) { return (n / 1024 / 1024).toFixed(1) + ' MB'; }
+      function render(note) {
+        // hidden inputs that actually get sent
+        form.querySelectorAll('input[data-prepared]').forEach(function (el) { el.remove(); });
+        photos.forEach(function (f, i) {
+          var dt = new DataTransfer(); dt.items.add(f);
+          var el = document.createElement('input');
+          el.type = 'file'; el.name = 'photo-' + (i + 1); el.hidden = true; el.setAttribute('data-prepared', '');
+          el.files = dt.files;
+          form.appendChild(el);
+        });
+        // thumbnails
+        thumbs.querySelectorAll('img').forEach(function (im) { URL.revokeObjectURL(im.src); });
+        thumbs.innerHTML = '';
+        photos.forEach(function (f, i) {
+          var li = document.createElement('li');
+          var im = document.createElement('img'); im.src = URL.createObjectURL(f); im.alt = 'Photo ' + (i + 1) + ': ' + f.name;
+          var rm = document.createElement('button'); rm.type = 'button'; rm.innerHTML = '&times;';
+          rm.setAttribute('aria-label', 'Remove photo ' + (i + 1));
+          rm.addEventListener('click', function () { photos.splice(i, 1); render(); fileInput.focus(); });
+          li.appendChild(im); li.appendChild(rm); thumbs.appendChild(li);
+        });
+        var full = photos.length >= MAX_PHOTOS;
+        fileInput.disabled = full; upload.classList.toggle('is-full', full);
+        title.textContent = full ? '5 photos added' : photos.length ? 'Tap to add more photos (' + (MAX_PHOTOS - photos.length) + ' left)' : 'Tap to add up to 5 photos';
+        fileList.textContent = photos.length
+          ? photos.length + ' of ' + MAX_PHOTOS + ' photos added \u00b7 ' + mb(totalSize()) + (note ? ' \u00b7 ' + note : '')
+          : (note || '');
+      }
 
       fileInput.addEventListener('change', function () {
-        clearPrepared();
         status.textContent = ''; status.className = 'form__status';
-        var files = Array.prototype.slice.call(fileInput.files);
-        if (!files.length) { fileList.textContent = ''; return; }
-        var extra = files.length > MAX_PHOTOS ? ' (only the first ' + MAX_PHOTOS + ' will be sent)' : '';
-        files = files.slice(0, MAX_PHOTOS);
-        fileList.textContent = 'Getting ' + files.length + (files.length === 1 ? ' photo' : ' photos') + ' ready\u2026';
-        btn.disabled = true;
-        var canSwap = typeof DataTransfer === 'function' && window.Promise;
-        preparing = (canSwap ? Promise.all(files.map(shrink)) : Promise.resolve(null)).then(function (ready) {
-          if (ready) {
-            try {
-              ready.forEach(function (f, i) {
-                var dt = new DataTransfer(); dt.items.add(f);
-                var el = document.createElement('input');
-                el.type = 'file'; el.name = 'photo-' + (i + 1); el.hidden = true; el.setAttribute('data-prepared', '');
-                el.files = dt.files;
-                form.appendChild(el);
-              });
-              fileInput.name = ''; // the shrunk copies are sent instead of the originals
-            } catch (err) { clearPrepared(); }
-          }
-          var names = files.map(function (f) { return f.name; }).join(', ');
-          fileList.textContent = files.length + (files.length === 1 ? ' photo: ' : ' photos: ') + names + extra + ' \u00b7 ' + mb(totalSize());
-        }).catch(function () { clearPrepared(); }).then(function () { btn.disabled = false; preparing = null; });
+        var picked = Array.prototype.slice.call(fileInput.files);
+        if (!picked.length) return;
+        if (!canCollect) { // fallback: send this pick as-is
+          fileList.textContent = picked.length + (picked.length === 1 ? ' photo' : ' photos') + ' selected';
+          return;
+        }
+        fileInput.name = ''; // only the prepared copies are sent
+        var room = MAX_PHOTOS - photos.length;
+        var extra = picked.length - room;
+        var note = extra > 0 ? '5 is the limit, so ' + extra + (extra === 1 ? ' photo wasn\u2019t' : ' photos weren\u2019t') + ' added' : '';
+        picked = picked.slice(0, room);
+        fileInput.value = ''; // lets people pick again (even the same photo)
+        preparing++; btn.disabled = true;
+        fileList.textContent = 'Getting ' + picked.length + (picked.length === 1 ? ' photo' : ' photos') + ' ready\u2026';
+        Promise.all(picked.map(shrink)).then(function (ready) {
+          photos = photos.concat(ready).slice(0, MAX_PHOTOS);
+          render(note);
+        }).catch(function () { render('one photo couldn\u2019t be added, please try another'); })
+          .then(function () { preparing--; if (!preparing) btn.disabled = false; });
       });
       ['dragenter', 'dragover'].forEach(function (t) { upload.addEventListener(t, function () { upload.classList.add('is-drag'); }); });
       ['dragleave', 'drop'].forEach(function (t) { upload.addEventListener(t, function () { upload.classList.remove('is-drag'); }); });
